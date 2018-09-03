@@ -6,14 +6,45 @@ using UnityEngine.Networking;
 
 public class WebRequestClient {
 
-    private readonly string url = "http://holymatch.asuscomm.com:8888/faceweb/recognize";
+    public static string baseurl = "";
+    private readonly string contentpath = "faceweb/recognize";
+
+    private string getURL()
+    {
+        if (baseurl == "")
+        {
+            return null;
+        }
+        string url = "";
+        if (baseurl.ToLower().StartsWith("http://"))
+        {
+            url = baseurl;
+        } else
+        {
+            url = "http://" + baseurl;
+        }
+
+        if (url.EndsWith("/"))
+        {
+            return url + contentpath;
+        }
+        else
+        {
+            return url + "/" + contentpath;
+        }
+    }
 
     public IEnumerator Post(Person inPerson)
     {
         string faceString = Convert.ToBase64String(inPerson.face);
         string jsonBody = "{\"FaceData\":\"" + faceString + "\"}";
         //Debug.Log("Call Post Request with url " + url + " and json " + jsonBody);
-        var request = new UnityWebRequest(url, "POST");
+        var url = getURL();
+        if (url == null)
+        {
+            yield return null;
+        }
+        var request = new UnityWebRequest(getURL(), "POST");
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
         request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
