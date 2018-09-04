@@ -6,15 +6,15 @@ using UnityEngine.Networking;
 
 public class WebRequestClient {
 
-    public static string baseurl = "";
     private readonly string contentpath = "faceweb/recognize";
 
     private string getURL()
     {
-        if (baseurl == "")
+        if (!PlayerPrefs.HasKey("host"))
         {
             return null;
         }
+        var baseurl = PlayerPrefs.GetString("host");
         string url = "";
         if (baseurl.ToLower().StartsWith("http://"))
         {
