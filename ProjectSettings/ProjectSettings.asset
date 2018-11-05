@@ -559,7 +559,7 @@ PlayerSettings:
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: FaceRecognitionClient
-  metroPackageVersion: 1.0.0.6
+  metroPackageVersion: 1.0.0.8
   metroCertificatePath: Assets/FaceRecognitionClient_TemporaryKey.pfx
   metroCertificatePassword: INVALID_UTF8_STRING
   metroCertificateSubject: Match Chan
@@ -593,14 +593,14 @@ PlayerSettings:
       HumanInterfaceDevice: False
       InputInjectionBrokered: False
       InternetClient: True
-      InternetClientServer: False
+      InternetClientServer: True
       Location: False
       Microphone: False
       MusicLibrary: False
       Objects3D: False
       PhoneCall: False
       PicturesLibrary: False
-      PrivateNetworkClientServer: False
+      PrivateNetworkClientServer: True
       Proximity: False
       RemovableStorage: False
       SharedUserCertificates: False
@@ -666,6 +666,10 @@ PlayerSettings:
       daydreamIconForeground: {fileID: 0}
       daydreamIconBackground: {fileID: 0}
   cloudServicesEnabled:
+    Build: 0
+    Collab: 0
+    ErrorHub: 0
+    Hub: 0
     UNet: 1
   facebookSdkVersion: 7.9.4
   apiCompatibilityLevel: 2

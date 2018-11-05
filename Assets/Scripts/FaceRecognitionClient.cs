@@ -29,6 +29,7 @@ namespace HoloLensWithOpenCVForUnityExample
     {
 
         int frameCount = 99;
+
         /// <summary>
         /// Determines if enables the detection.
         /// </summary>
@@ -58,6 +59,8 @@ namespace HoloLensWithOpenCVForUnityExample
         /// The webcam texture to mat helper.
         /// </summary>
         HololensCameraStreamToMatHelper webCamTextureToMatHelper;
+
+        TcpNetworkServerManager tcpNetworkServerMgr;
 
         /// <summary>
         /// The gray mat.
