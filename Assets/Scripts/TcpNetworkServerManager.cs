@@ -26,11 +26,11 @@ public class TcpNetworkServerManager : MonoBehaviour
         Debug.Log("Server start.");
 #if UNITY_UWP
         Task.Run(() => {
-                if (serverStatus == ServerStatus.Stopped)
-                {
-                    StartServer();
-                } 
-            });
+            if (serverStatus == ServerStatus.Stopped)
+            {
+                StartServer();
+            } 
+        });
 #endif
     }
 
@@ -47,48 +47,50 @@ public class TcpNetworkServerManager : MonoBehaviour
 #if UNITY_UWP
 
     private async void StartServer()
+    {
+        try
         {
-            try
-            {
-                var streamSocketListener = new Windows.Networking.Sockets.StreamSocketListener();
+            var streamSocketListener = new Windows.Networking.Sockets.StreamSocketListener();
 
-                // The ConnectionReceived event is raised when connections are received.
-                streamSocketListener.ConnectionReceived += this.StreamSocketListener_ConnectionReceived;
+            // The ConnectionReceived event is raised when connections are received.
+            streamSocketListener.ConnectionReceived += this.StreamSocketListener_ConnectionReceived;
 
-                // Start listening for incoming TCP connections on the specified port. You can specify any port that's not currently in use.
-                await streamSocketListener.BindServiceNameAsync(PortNumber);
-                serverStatus = ServerStatus.Started;
-            }
-            catch (Exception ex)
-            {
-                Windows.Networking.Sockets.SocketErrorStatus webErrorStatus = Windows.Networking.Sockets.SocketError.GetStatus(ex.GetBaseException().HResult);
-                }
+            // Start listening for incoming TCP connections on the specified port. You can specify any port that's not currently in use.
+            await streamSocketListener.BindServiceNameAsync(PortNumber);
+            serverStatus = ServerStatus.Started;
         }
+        catch (Exception ex)
+        {
+            Windows.Networking.Sockets.SocketErrorStatus webErrorStatus = Windows.Networking.Sockets.SocketError.GetStatus(ex.GetBaseException().HResult);
+            }
+    }
 
     private async void StreamSocketListener_ConnectionReceived(Windows.Networking.Sockets.StreamSocketListener sender, Windows.Networking.Sockets.StreamSocketListenerConnectionReceivedEventArgs args)
-        {
-            string request = "";
+    {
+        string request = "";
             
-            using (var streamReader = new StreamReader(args.Socket.InputStream.AsStreamForRead()))
+        using (var streamReader = new StreamReader(args.Socket.InputStream.AsStreamForRead()))
+        {
+            using (Stream outputStream = args.Socket.OutputStream.AsStreamForWrite())
             {
-                using (Stream outputStream = args.Socket.OutputStream.AsStreamForWrite())
+                using (var streamWriter = new StreamWriter(outputStream))
                 {
-                    using (var streamWriter = new StreamWriter(outputStream))
+                    await SendMessage(streamWriter, "localhost");
+                    while (request.ToLower() != "exit")
                     {
-                        await SendMessage(streamWriter, "localhost");
-                        while (request.ToLower() != "exit")
-                        {
-                            request = await streamReader.ReadLineAsync();
-                            await SendMessage(streamWriter, request);
-                        }
+                        request = await streamReader.ReadLineAsync();
+                        PlayerPrefs.SetString("host", request);
+                        PlayerPrefs.Save();
+                        await SendMessage(streamWriter, request);
                     }
+                }
                     
-                }                    
-            }
-
-            sender.Dispose();
-            serverStatus = ServerStatus.Stopped;
+            }                    
         }
+
+        sender.Dispose();
+        serverStatus = ServerStatus.Stopped;
+    }
 
         private async Task<Boolean> SendMessage(StreamWriter streamWriter, String request)
         {
